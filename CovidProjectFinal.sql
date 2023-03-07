@@ -24,7 +24,8 @@ FROM CovidProject. .CovidDeaths
 WHERE continent is not NULL
 Order by 1,2
 
-
+select MAX(total_cases) as TotalCases, MAX(total_deaths) as TotalDeaths
+From CovidProject. .CovidDeaths
 
 -- Looking at Total Cases vs Population
 -- Shows what percentage of population got Covid
@@ -36,11 +37,19 @@ Order by 1,2
 
 -- Lookin at countries with highest Infection Rate compared to Population
 
-SELECT location, population, MAX(total_cases) as HighestInfectionCount, MAX((total_cases/population)) *100 AS PercentPopulationInfected
+Select Location, Population,date, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
+From CovidProject..CovidDeaths
+--Where location like '%states%'
+Group by Location, Population, date
+order by PercentPopulationInfected desc
+
+
+-- Showing the spread of new cases over time across countries
+
+SELECT location,date, new_cases
 FROM CovidProject. .CovidDeaths
-WHERE continent is not NULL
-GROUP BY location, population
-Order by PercentPopulationInfected DESC
+WHERE continent is not NULL 
+ORDER BY 1,2
 
 -- Showing countries with highest Death Count 
 
@@ -128,6 +137,7 @@ Select*, (RollingCountVaccinated/Population)*100
 From PopvsVac
 
 
+
 -- Creating View to store data for later visualizations
 
 -- Percent Population that is Vaccinated
@@ -157,16 +167,16 @@ Create view PercentDeathPopulation as
 SELECT location, continent, date, total_cases, total_deaths, (total_deaths/total_cases) *100 AS DeathPercentage
 FROM CovidProject. .CovidDeaths
 WHERE continent is not NULL
-Order by 6 DESC
+-- Order by 6 DESC
 
 -- Covid Deaths per Country 
 
-Create view DeathsPerCountry
+Create view DeathsPerCountry as
 SELECT location, MAX(total_deaths) as TotalDeathCount
 FROM CovidProject. .CovidDeaths
 WHERE continent is not NULL
 GROUP BY location
-ORDER BY TotalDeathCount DESC
+-- ORDER BY TotalDeathCount DESC
 
 -- Covid Deaths per Country by over Population
 
